@@ -38,6 +38,7 @@ def restart():
         )
         db.session.add(new_product)
         db.session.commit()
+    return 'done'
 
 @app.route('/')
 def index():
