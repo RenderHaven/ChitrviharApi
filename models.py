@@ -21,55 +21,52 @@ class Product(db.Model):
 
     p_id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     name = db.Column(db.String(200), nullable=False)
+    disc = db.Column(db.String(500))
+    image_url = db.Column(db.String(500))  # Store image URL instead of binary data
 
-    cat_id = db.Column(db.String(36), ForeignKey('categories.c_id'), nullable=True)
+    c_id = db.Column(db.String(36), ForeignKey('categories.c_id'), nullable=False)
     category = relationship("Category", back_populates="products")
 
-    disc = db.Column(db.String(500))
-    display_img = db.Column(db.LargeBinary)
-
-    pro_to_iteams = relationship('ProToIteam', back_populates="product")
+    product_items = relationship('ProductItem', secondary='product_to_items', back_populates="products")
 
 
-class ProductIteam(db.Model):
+class ProductItem(db.Model):
     __tablename__ = 'product_items'
 
     i_id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     name = db.Column(db.String(200), nullable=False)
-    img = db.Column(db.LargeBinary)
-    price = db.Column(db.Integer, nullable=False, default=0)
+    image_url = db.Column(db.String(500))  # Store image URL instead of binary data
+    price = db.Column(db.Float, nullable=False, default=0.0)
     disc = db.Column(db.String(500))
-    qty_in_stock = db.Column(db.Integer, nullable=False, default=0)
+    stock_quantity = db.Column(db.Integer, nullable=False, default=0)
 
-    pro_to_iteams = relationship('ProToIteam', back_populates="product_iteam")
+    products = relationship('Product', secondary='product_to_items', back_populates="product_items")
 
 
-class ProToIteam(db.Model):
+class ProToItem(db.Model):
     __tablename__ = 'product_to_items'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    i_id = db.Column(db.String(36), ForeignKey('product_items.i_id'))
-    p_id = db.Column(db.String(36), ForeignKey('products.p_id'))
-
-    product = relationship("Product", back_populates="pro_to_iteams")
-    product_iteam = relationship("ProductIteam", back_populates="pro_to_iteams")
+    p_id = db.Column(db.String(36), ForeignKey('products.p_id'), nullable=False)
+    i_id = db.Column(db.String(36), ForeignKey('product_items.i_id'), nullable=False)
 
 
 class Variation(db.Model):
     __tablename__ = 'variations'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    c_id = db.Column(db.String(36), ForeignKey('categories.c_id'))
+    c_id = db.Column(db.String(36), ForeignKey('categories.c_id'), nullable=False)
     name = db.Column(db.String(200), nullable=False)
 
     category = relationship("Category")
+    options = relationship("VariationOption", back_populates="variation", cascade="all, delete-orphan")
 
 
 class VariationOption(db.Model):
     __tablename__ = 'variation_options'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    var_id = db.Column(db.Integer, ForeignKey('variations.id'))
+    variation_id = db.Column(db.Integer, ForeignKey('variations.id'), nullable=False)
     value = db.Column(db.String(200), nullable=False)
 
-    variation = relationship("Variation")
+    variation = relationship("Variation", back_populates="options")
