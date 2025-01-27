@@ -1,12 +1,27 @@
-from models import db, Product, Category
+from models import db, Product, Category,Variation,VariationOption,User
 from app import app
 
 # Sample product data
 product_data = {
     "Pro1": {
-        "PId": 'Pro1',
+        "PId": 'Home',
         "name": "Home",
-        "CId": 'Cat1',  # Link this product to the "Home" category
+        "CId": 'Home',  # Link this product to the "Home" category
+    },
+    "Pro2": {
+        "PId": 'Pro',
+        "name": "promotion",
+        "CId": 'Pro',  # Link this product to the "Home" category
+    },
+    "Pro3": {
+        "PId": 'New',
+        "name": "New Collection",
+        "CId": 'New',  # Link this product to the "Home" category
+    },
+    "Pro4": {
+        "PId": 'Test',
+        "name": "Testing",
+        "CId": 'Test',  # Link this product to the "Home" category
     },
 }
 
@@ -15,22 +30,42 @@ category_data = {
     "Cat1": {
         "CId": 'Cat1',
         "PId": None,  # Parent ID is None for top-level categories
-        "name": "Home",
+        "name": "Base",
     },
     "Cat2": {
-        "CId": 'Cat2',
+        "CId": 'Home',
         "PId": 'Cat1',  # Parent ID is 'Cat1'
-        "name": "Gender",
+        "name": "HomePage",
     },
     "Cat3": {
-        "CId": 'Cat3',
+        "CId": 'Pro',
         "PId": 'Cat1',  # Parent ID is 'Cat1'
-        "name": "Size",
+        "name": "Prmotions",
     },
     "Cat4": {
-        "CId": 'Cat4',
+        "CId": 'New',
         "PId": 'Cat1',  # Parent ID is 'Cat1'
-        "name": "Colour",
+        "name": "NewProducts",
+    },
+    "Cat5": {
+        "CId": 'Test',
+        "PId": 'Home',  # Parent ID is 'Cat1'
+        "name": "Testing",
+    },
+}
+
+variation_data = {
+    "Cat1": {
+        "name": "Discount",
+        "options":['10']
+    },
+    "Cat2": {
+        "name": "Size",
+        "options":['S']
+    },
+    "Cat3": {
+        "name": "Color",
+        "options":['M']
     },
 }
 
@@ -57,6 +92,25 @@ def insert_data():
         db.session.add(new_product)
 
     # Commit all changes to the database
+    db.session.commit()
+
+    for id,info in variation_data.items():
+        variation = Variation(
+            name=info['name'],
+        )
+        db.session.add(variation)
+        db.session.commit()
+        for option_value in info['options']:
+            option = VariationOption(value=option_value, variation_id=variation.id)
+            db.session.add(option)
+        db.session.commit()
+    user = User(
+        id='User1',
+        name='Vikram',
+        number='+919461373630',
+        email='vikrambalai1002@gmail.com'
+    )
+    db.session.add(user)
     db.session.commit()
 
 if __name__ == '__main__':
