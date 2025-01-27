@@ -24,7 +24,7 @@ CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "PUT", "
 
 
 # Configure the database connection string from environment variables, fallback to SQLite
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', "postgresql://postgres:vikramisdevloper@database-1.cv4mksa0gyui.eu-north-1.rds.amazonaws.com:5432/postgres")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', "postgresql://postgres:vikramisdevloper@database-1.c34momewg4x8.ap-south-1.rds.amazonaws.com:5432/postgres")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize the app with SQLAlchemy
@@ -41,22 +41,6 @@ app.register_blueprint(variation_bp, url_prefix='/variation')
 app.register_blueprint(disc_bp, url_prefix='/description')
 app.register_blueprint(orders_bp, url_prefix='/order')
 
-# Ensure database tables are created (development only)
-# @app.route('/restart')
-# def restart():
-#     # Ensure to comment or protect this in production
-#     if app.config['ENV'] == 'development':
-#         with app.app_context():
-#             db.drop_all()  # Be cautious, this will delete all data
-#             db.create_all()  # Recreate tables
-#             # Example: adding initial categories and products
-#             new_category = Category(c_id='Cat1', pc_id=None, name='Home')
-#             db.session.add(new_category)
-#             new_product = Product(p_id='Home', name='Home', c_id='Cat1')
-#             db.session.add(new_product)
-#             db.session.commit()
-#             logging.info('Database reset and initial data added.')
-#     return 'done'
 
 @app.route('/')
 def index():
@@ -67,4 +51,4 @@ if __name__ == '__main__':
         db.create_all() 
         migrate.init_app(app, db)
     # Running the app with debug mode
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=True,port=8080)
